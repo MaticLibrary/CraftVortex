@@ -1,0 +1,154 @@
+FANTASYCRAFT — OPIS STRUKTURY PROJEKTU
+====================================
+
+Ten plik opisuje najważniejsze katalogi, pliki źródłowe i miejsca, w których
+znajdują się poszczególne systemy gry. Projekt jest napisany w C++20 i korzysta
+z OpenGL oraz GLFW.
+
+
+STRUKTURA KATALOGÓW
+-------------------
+
+OpenGL/
+|-- assets/                 Shadery używane przez renderowanie gry.
+|   `-- shaders/
+|       |-- voxel.vert      Shader wierzchołków świata 3D.
+|       |-- voxel.frag      Shader fragmentów bloków i obiektów 3D.
+|       |-- ui.vert         Shader wierzchołków interfejsu 2D.
+|       `-- ui.frag         Shader fragmentów interfejsu 2D.
+|-- build/                  Pliki generowane przez CMake i Ninja podczas kompilacji.
+|                           Zawiera m.in. pliki pośrednie; zwykle nie edytuje się ich ręcznie.
+|-- include/                Nagłówki bibliotek zewnętrznych.
+|   |-- GLFW/               Nagłówki GLFW do okna, wejścia i kontekstu OpenGL.
+|   |-- glad/               Nagłówek loadera funkcji OpenGL.
+|   |-- glm/                Biblioteka matematyczna GLM: wektory i macierze.
+|   `-- FastNoiseLite.h     Biblioteka szumu używana przy generowaniu świata.
+|-- lib/                    Biblioteki GLFW linkowane przy budowaniu projektu.
+|-- src/                    Kod źródłowy gry.
+|   |-- engine/             Silnikowe systemy gry i logika gracza.
+|   |-- ui/                 Interfejs użytkownika i HUD.
+|   |-- world/              Świat voxelowy, chunki, biomy, struktury i moby.
+|   |-- glad.c              Implementacja loadera OpenGL.
+|   `-- main.cpp            Punkt wejścia, inicjalizacja i główna pętla gry.
+|-- CMakeLists.txt          Konfiguracja projektu i lista plików kompilowanych.
+|-- build.bat               Konfiguracja i pełna kompilacja projektu w Windows.
+|-- run.bat                 Kompiluje zmienione pliki, a następnie uruchamia grę.
+|-- fantasy_craft.exe       Plik wykonywalny gry tworzony przez kompilację.
+`-- document.txt            Ten opis projektu.
+
+
+KOD ŹRÓDŁOWY: src/engine/
+------------------------
+
+Common.h
+  Wspólne definicje używane przez różne części gry: typy bloków, stałe świata,
+  biblioteki i podstawowe deklaracje.
+
+Camera.h / Camera.cpp
+  Kamera pierwszoosobowa. Obsługuje kierunek patrzenia, ruch myszy i macierze
+  widoku potrzebne do rysowania świata.
+
+Player.h / Player.cpp
+  Stan i zachowanie gracza: ruch, skakanie, grawitacja, kolizje, zdrowie,
+  niszczenie i stawianie bloków, pasek szybkiego wyboru, ekwipunek, crafting,
+  narzędzia, miecz, łuk i amunicja.
+
+Raycast.h / Raycast.cpp
+  Promień wychodzący z kamery. Wykorzystywany do wskazywania bloków, wybierania
+  miejsca postawienia bloku, otwierania skrzyń i wykrywania przeszkód.
+
+Shader.h / Shader.cpp
+  Wczytywanie i kompilowanie shaderów GLSL oraz ustawianie ich parametrów.
+
+TextureAtlas.h / TextureAtlas.cpp
+  Tworzenie i obsługa atlasu tekstur bloków. Bloki wskazują kafel atlasu,
+  a renderer używa UV do narysowania właściwej tekstury.
+
+
+KOD ŹRÓDŁOWY: src/world/
+-----------------------
+
+Block.h
+  Rejestr bloków. Określa ich nazwy, właściwości (np. czy blok jest solidny)
+  oraz kafle tekstury używane na poszczególnych ścianach.
+
+Chunk.h / Chunk.cpp
+  Dane pojedynczego fragmentu świata, czyli chunka. Chunk przechowuje bloki
+  i dane potrzebne do jego rysowania.
+
+ChunkMesher.h / ChunkMesher.cpp
+  Przygotowuje geometrię chunków do renderowania. Tworzy widoczne ściany bloków,
+  aby ograniczyć liczbę rysowanych trójkątów.
+
+IslandGenerator.h / IslandGenerator.cpp
+  Generowanie terenu i biomów, wysokości, dekoracji oraz rozmieszczenia
+  struktur. Wywołuje funkcje budujące obiekty z Structures.h.
+
+Structures.h
+  Proceduralne konstrukcje świata, m.in. zamki, wioski, świątynie, wieże,
+  ruiny i elementy dekoracyjne. Tu warto zmieniać kształt i wyposażenie
+  generowanych budowli.
+
+World.h / World.cpp
+  Zarządzanie światem: ładowanie i odciążanie chunków, dostęp do bloków,
+  renderowanie, atmosfera biomów oraz zawartość skrzyń. Łupy w skrzyniach
+  wygenerowanych przez świat są inicjalizowane osobno od pustych skrzyń gracza.
+
+MobManager.h / MobManager.cpp
+  Tworzenie, ruch, ataki, zdrowie i rysowanie mobów: elfów, orków, ludzi
+  i wróżek. Obsługuje również trafianie mobów przez broń gracza.
+
+BlockParticles.h / BlockParticles.cpp
+  Efekty cząsteczkowe związane z blokami, np. efekt po ich zniszczeniu.
+
+
+KOD ŹRÓDŁOWY: src/ui/
+---------------------
+
+HUD.h / HUD.cpp
+  Rysowanie interfejsu 2D: celownika, paska bloków, zdrowia, informacji
+  o narzędziu, liczników FPS/GPU/mobów oraz okien ekwipunku, skrzyni i craftingu.
+  Obsługuje też kliknięcia w elementy tych okien.
+
+
+PUNKT STARTOWY I STEROWANIE
+---------------------------
+
+src/main.cpp
+  Uruchamia GLFW i OpenGL, tworzy świat, gracza, HUD i moby, rejestruje
+  callbacki klawiatury i myszy oraz prowadzi główną pętlę gry. Jeśli trzeba
+  zmienić obsługę klawisza lub kliknięcia myszy, zacznij od tego pliku.
+
+Aktualne skróty w grze:
+  WASD          ruch
+  Mysz          rozglądanie się
+  Spacja        skok
+  Shift         sprint
+  E             ekwipunek
+  C             crafting
+  PPM           stawianie bloku; otwiera wskazaną skrzynię
+  LPM           niszczenie bloku lub atak; łuk strzela strzałą
+  Q             zmiana posiadanego narzędzia/broni
+  Kółko myszy   zmiana wybranego bloku na pasku
+  F             przełączanie trybu lotu
+  Esc           zamykanie okien lub zwalnianie kursora
+
+
+KOMPILACJA I URUCHAMIANIE
+-------------------------
+
+CMakeLists.txt
+  Ustawia C++20, optymalizacje, ścieżki nagłówków, pliki źródłowe oraz biblioteki
+  linkowane do programu. Plik wykonywalny jest tworzony w katalogu głównym
+  projektu jako fantasy_craft.exe.
+
+build.bat
+  Konfiguruje katalog build przez CMake/Ninja i buduje projekt od początku
+  lub przebudowuje go zgodnie z konfiguracją.
+
+run.bat
+  Uruchamia Ninja dla katalogu build, a po udanej kompilacji startuje
+  fantasy_craft.exe.
+
+Katalog build/ i plik fantasy_craft.exe są wynikami kompilacji. Kod gry znajduje
+się w src/; shadery są w assets/shaders/.
