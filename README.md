@@ -11,5 +11,5 @@
 | [Fast Noise Lite](https://github.com/Auburn/FastNoiseLite) | Generacja szumu |
 
 ## BUDOWA PROJEKTU
-- [Kompilacja na Windowsie przez MinGW64](https://github.com/MaticLibrary/CraftVortex/blob/main/Docs/Windows_instalacja_przez_MinGW64.md)
-- [Kompilacja na Windowsie przez MSVCP](https://github.com/MaticLibrary/CraftVortex/blob/main/Docs/Windows_instalacja_przez_Visual_Cpp.md)
+- [Kompilacja na Windowsie przez MinGW64](https://github.com/MaticLibrary/CraftVortex/blob/main/docs/Windows_instalacja_przez_MinGW64.md)
+- [Kompilacja na Windowsie przez MSVCP]()
