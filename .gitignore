@@ -1,2 +1,35 @@
-/build/
-/fantasy_craft.exe
+# IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# Logs
+*.log
+*.tmp
+
+# Local
+.env
+.env.local
+*.pem
+
+# Game data
+saves/
+worlds/
+screenshots/
+crash-reports/
+
+# C++
+build/
+cmake-build-*/
+CMakeFiles/
+CMakeCache.txt
+*.o
+*.obj
+*.exe
+*.dll
+*.so
+*.a
+
+
