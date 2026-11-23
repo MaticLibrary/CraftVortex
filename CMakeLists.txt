@@ -1,53 +1,78 @@
-cmake_minimum_required(VERSION 3.16)
-project(FantasyCraft LANGUAGES C CXX)
+cmake_minimum_required(VERSION 3.20)
+project(CraftVortex LANGUAGES C CXX)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
-# Optimization flags for high performance release build
-if(MSVC)
-    add_compile_options(/O2 /fp:fast)
-else()
-    add_compile_options(-O3 -march=native -ffast-math)
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+    set(CMAKE_BUILD_TYPE Release)
 endif()
 
-include_directories(
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/src
-)
+# Statycznie
+set(BUILD_SHARED_LIBS OFF)
+if(MSVC)
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+    set(USE_MSVC_RUNTIME_LIBRARY_DLL OFF CACHE BOOL "Use MSVC runtime library DLL" FORCE)
+endif()
 
-set(SOURCES
-    src/glad.c
-    src/main.cpp
-    src/engine/Shader.cpp
-    src/engine/Camera.cpp
-    src/engine/TextureAtlas.cpp
-    src/engine/Raycast.cpp
-    src/engine/Player.cpp
-    src/world/Chunk.cpp
-    src/world/ChunkMesher.cpp
-    src/world/IslandGenerator.cpp
-    src/world/World.cpp
-    src/world/MobManager.cpp
-    src/world/BlockParticles.cpp
-    src/ui/HUD.cpp
-)
+# GLFW
+set(GLFW_BUILD_DOCS     OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_TESTS    OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(GLFW_INSTALL        OFF CACHE BOOL "" FORCE)
+add_subdirectory(include/GLFW)
 
-add_executable(fantasy_craft ${SOURCES})
+# GLAD
+add_library(glad STATIC src/glad.c)
+target_include_directories(glad PUBLIC include)
+target_link_libraries(glad PUBLIC ${CMAKE_DL_LIBS})
 
-# Target output directory directly in root folder so it accesses assets/ directly
-set_target_properties(fantasy_craft PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-    RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_CURRENT_SOURCE_DIR}"
-    OUTPUT_NAME "fantasy_craft"
-)
+# Gra
+file(GLOB_RECURSE CV_SOURCES CONFIGURE_DEPENDS src/*.cpp)
+add_executable(CraftVortex ${CV_SOURCES})
+target_include_directories(CraftVortex PRIVATE include src)
+target_link_libraries(CraftVortex PRIVATE glfw glad)
 
-# Link GLFW and Windows OpenGL libraries
-target_link_directories(fantasy_craft PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/lib)
-target_link_libraries(fantasy_craft PRIVATE
-    glfw3
-    opengl32
-    gdi32
-    user32
-    kernel32
-)
+include(CheckLinkerFlag)
+option(CV_INSTALL_DEPS "Install missing dependencies (requires sudo)" OFF)
+
+if(MINGW)
+    target_link_options(CraftVortex PRIVATE -static -static-libgcc -static-libstdc++)
+elseif(UNIX AND NOT APPLE)
+    unset(CV_HAS_STATIC_LIBSTDCXX CACHE)
+    check_linker_flag(CXX "-static-libstdc++" CV_HAS_STATIC_LIBSTDCXX)
+
+    if(NOT CV_HAS_STATIC_LIBSTDCXX)
+        message(STATUS "Static g++ libraries are missing, launching install_cpp.sh")
+        execute_process(
+            COMMAND bash ./install_cpp.sh
+            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+            RESULT_VARIABLE CV_INSTALL_RESULT)
+        if(NOT CV_INSTALL_RESULT EQUAL 0)
+            message(WARNING "ERROR: install_cpp.sh failed: (${CV_INSTALL_RESULT}).")
+        endif()
+
+        unset(CV_HAS_STATIC_LIBSTDCXX CACHE)
+        check_linker_flag(CXX "-static-libstdc++" CV_HAS_STATIC_LIBSTDCXX)
+    endif()
+
+    if(NOT CV_HAS_STATIC_LIBSTDCXX)
+        message(FATAL_ERROR
+            "ERROR: libstdc++ is not installed or cannot be linked statically. "
+            "Please install it manually and run cmake again.")
+    endif()
+
+    target_link_options(CraftVortex PRIVATE -static-libgcc -static-libstdc++)
+endif()
+
+if(MSVC)
+    target_compile_options(CraftVortex PRIVATE /W4)
+else()
+    target_compile_options(CraftVortex PRIVATE -Wall -Wextra)
+endif()
+
+add_custom_command(TARGET CraftVortex POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${CMAKE_SOURCE_DIR}/assets
+            $<TARGET_FILE_DIR:CraftVortex>/assets)
