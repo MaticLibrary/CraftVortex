@@ -13,3 +13,11 @@
 ## BUDOWA PROJEKTU
 - [Kompilacja na Windowsie przez MinGW64](https://github.com/MaticLibrary/CraftVortex/blob/main/docs/Windows_instalacja_przez_MinGW64.md)
 - [Kompilacja na Windowsie przez MSVCP]()
+
+## Budowanie przez CMake
+```bash
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+```
+```bash
+cmake --build build --config Release -j
+```
