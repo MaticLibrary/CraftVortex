@@ -19,6 +19,21 @@ cmake -S . -B build -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release; if ($?) { c
 ```
 
 ## Linux (GCC)
+Upewnij się że twoja dystrybucja posiada potrzebne biblioteki
+### Fedora
+```bash
+$ sudo dnf install gcc gcc-c++ cmake make pkgconf-pkg-config libX11-devel libXrandr-devel libXinerama-devel libXcursor-devel libXi-devel wayland-devel wayland-protocols-devel libxkbcommon-devel mesa-libGL-devel libstdc++-static
+```
+### Debian
+```bash
+$ sudo apt install build-essential cmake pkg-config xorg-dev libwayland-dev wayland-protocols libxkbcommon-dev libgl1-mesa-dev
+```
+### Arch
+```bash
+$ sudo pacman -S --needed base-devel cmake pkgconf libx11 libxrandr libxinerama libxcursor libxi wayland wayland-protocols libxkbcommon mesa
+```
+
+Następnie użyj podane poniżej komendy:
 ```bash
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release -j
 ```
