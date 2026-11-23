@@ -10,7 +10,13 @@
 | [GLM (OpenGL Mathematics)](https://github.com/g-truc/glm) | Biblioteka matematyczna |
 | [Fast Noise Lite](https://github.com/Auburn/FastNoiseLite) | Generacja szumu |
 
-# BUDOWA PROJEKTU
+# BUDOWA PROJEKTU (IDE)
+## Visual Studio Code (MinGW)
+Pobierz [Visual Studio Code](https://code.visualstudio.com/download), następnie wgraj rozszerzenia [C/C++](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools) i [CMake](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cmake-tools). 
+Zrestartuj IDE i wejdź w zakładkę CMake, następnie użyj skrótu `Ctrl`+`Shift`+`P`, wpisz `CMake: Set Build Target` i wybierz `CraftVortex Executable`. Od teraz możesz swobodnie budować i uruchamiać projekt w lewym dolnym rogu edytora.  
+
+
+# BUDOWA PROJEKTU (TERMINAL)
 ## Windows (MinGW)
 Pobierz i zainstaluj [CMake](https://cmake.org/download/) i [MinGW](https://www.msys2.org/). Dodaj `C:\MinGW\bin` do `PATH`.
 Następnie użyj podane poniżej komendy:
