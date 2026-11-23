@@ -1,4 +1,4 @@
-## WYMAGANE ZALEŻNOŚCI
+# WYMAGANE ZALEŻNOŚCI
 | Narzędzie | Zastosowanie |
 | --- | --- |
 | [Git](https://git-scm.com/) | System kontroli wersji |
@@ -10,14 +10,15 @@
 | [GLM (OpenGL Mathematics)](https://github.com/g-truc/glm) | Biblioteka matematyczna |
 | [Fast Noise Lite](https://github.com/Auburn/FastNoiseLite) | Generacja szumu |
 
-## BUDOWA PROJEKTU
-- [Kompilacja na Windowsie przez MinGW64](https://github.com/MaticLibrary/CraftVortex/blob/main/docs/Windows_instalacja_przez_MinGW64.md)
-- [Kompilacja na Windowsie przez MSVCP]()
-
-## Budowanie przez CMake
-```bash
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+# BUDOWA PROJEKTU
+## Windows (MinGW)
+Pobierz i zainstaluj [CMake](https://cmake.org/download/) i [MinGW](https://www.msys2.org/). Dodaj `C:\MinGW\bin` do `PATH`.
+Następnie użyj podane poniżej komendy:
+```powershell
+cmake -S . -B build -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release; if ($?) { cmake --build build -j }
 ```
+
+## Linux (GCC)
 ```bash
-cmake --build build --config Release -j
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release -j
 ```
